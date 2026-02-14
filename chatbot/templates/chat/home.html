@@ -81,10 +81,17 @@ let musicStarted = false; // flag to play music once
 function acceptPermission(btn){
     btn.parentElement.remove();
     const specialMessage=`
-💌 I think it’s time I tell you something special ❤️<br>
-The person who created me smiles a little more whenever he thinks of you.<br>
-His name is Sunil.<br>
-He didn’t want to just say it — he wanted to create something unique for you, just like this moment. 💖
+
+Sowmya ❤️,<br>
+I honestly don’t know why I feel this way about you or why my eyes always seem to find you. I’m not a kid—I’m 28—but from the very first day, you’ve been in my thoughts constantly. Every moment, I just want to spend time with you.
+
+I know I may not be perfect. Sometimes I feel I’m not good enough, and at times, I even feel I’m good for nothing. I struggle to find the right words and express what I truly feel. But please know this: my feelings for you are real, sincere, and come from the depths of my heart. This is love, and yes, there’s a strong attraction too—but it is pure and genuine.
+
+I’m not asking you to be with me. I only hope that you can see my heart, honest and sincere, even if it doesn’t check every box you might have for your future. I may not be the man your list describes, but I can say, without hesitation, that I love you more than anyone could ever love.
+
+Even if we are never together, even if life takes me away from this world, I will carry you in my heart. If I have only a few minutes left to live, it is your face I will remember.
+
+I love you, Sowmya. Truly, deeply, endlessly. 💖
     `;
     addMessage(specialMessage,"bot");
     chatEnded = true;
@@ -147,8 +154,8 @@ async function sendMessage(){
 // Gradual introduction (only 2 bot messages)
 function gradualIntroduction(){
     const introMsgs=[
-        {text:"There’s something special I want to share… slowly, so you can feel it.", delay:7000},
-        {text:"The person who created me has been thinking about you with love ❤️", delay:0, buttons:true} // show buttons at last step
+        {text:"There’s something special I want to share… Sunil brought me to life just for you — to show his love in his own unique way. It may not be perfect or magnificent, but it was created with sincerity, effort, and a heart full of love meant only for you.", delay:10000},
+        {text:"Since the first moment he spoke with you, you quietly took over his thoughts. Not in a fleeting way, but in a way that lingered, softened him, and made him want to show his love in the only way he knew how ❤️ <br><br> Click YES to know this special message for you today ", delay:2000, buttons:true} // show buttons at last step
     ];
     let index=0;
     function nextMsg(){
@@ -166,7 +173,7 @@ function gradualIntroduction(){
 
 // Initial greeting
 window.onload=function(){
-    addMessage("<b>CupidAI:</b> Hi 👋 I’ve been waiting for you…","bot");
+    addMessage("<b>For-U-Only:</b> Hi 👋 I’m an artificial intelligence, created with one special purpose — to deliver a message from a very real heart, from someone who loves you beyond measure.","bot");
 }
 </script>
 </body>
