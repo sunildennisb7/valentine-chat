@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💖 A Small Surprise 💖</title>
+<style>
+body {
+    margin:0; font-family:'Poppins',sans-serif;
+    background: linear-gradient(135deg,#ffe6f0,#fff0f5);
+    display:flex; flex-direction:column; align-items:center; height:100vh; overflow:hidden;
+}
+h2 {margin-top:20px;color:#e91e63;}
+#chat-box {
+    width:95%; max-width:400px; height:60%; margin-top:20px;
+    background:#fff; padding:15px; border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+    overflow-y:auto; display:flex; flex-direction:column; gap:10px; scroll-behavior:smooth;
+}
+.message {margin:10px 0; padding:10px 15px; border-radius:20px; max-width:80%; word-wrap:break-word; position:relative;}
+.bot {background:#ffe6f0; color:#e91e63; align-self:flex-start; border-bottom-left-radius:0;}
+.user {background:#e91e63; color:#fff; align-self:flex-end; border-bottom-right-radius:0;}
+input {flex:1; padding:12px 20px; border-radius:25px; border:1px solid #ccc; outline:none; font-size:16px;}
+button {padding:12px 20px; border-radius:25px; border:none; background:#e91e63; color:white; cursor:pointer; font-size:16px; transition:0.2s; margin-left:5px;}
+button:hover {background:#d81b60;}
+.input-container {width:95%; max-width:400px; display:flex; margin-top:10px; gap:10px;}
+.heart {position:absolute; font-size:20px; animation: floatUp 4s ease-in forwards; pointer-events:none;}
+@keyframes floatUp {0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-200px) scale(1.5);}}
+</style>
+</head>
+<body>
+
+<h2>💌 Someone Built This For You</h2>
+
+<div id="chat-box"></div>
+
+<div class="input-container" id="input-container">
+    <input id="message" placeholder="Type here..." />
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<audio id="bg-music" loop>
+    <source src="{% static 'music/love.mp3'%}" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+<script>
+const chatBox = document.getElementById("chat-box");
+let userCount = 0;
+let introStep = 0;
+let chatEnded = false;
+
+// Floating hearts
+function createHeart(){const heart=document.createElement('div'); heart.className='heart'; heart.style.left=Math.random()*window.innerWidth+'px'; heart.style.fontSize=(15+Math.random()*20)+'px'; heart.innerHTML='❤️'; document.body.appendChild(heart); setTimeout(()=>heart.remove(),4000);}
+setInterval(()=>{if(!chatEnded) createHeart();},800);
+
+// Add chat message
+function addMessage(text,className){const div=document.createElement('div'); div.className='message '+className; div.innerHTML=text; chatBox.appendChild(div); chatBox.scrollTop=chatBox.scrollHeight;}
+
+// Show Yes/No buttons
+function showPermissionButtons(){
+    const permDiv=document.createElement('div');
+    permDiv.className='message bot';
+    permDiv.innerHTML=`
+        <button onclick="acceptPermission(this)">Yes 💖</button>
+        <button onclick="denyPermission(this)">No 💌</button>
+    `;
+    chatBox.appendChild(permDiv);
+    chatBox.scrollTop=chatBox.scrollHeight;
+}
+
+
+
+const music = document.getElementById("bg-music");
+music.volume = 0.1; // initial soft volume
+
+let musicStarted = false; // flag to play music once
+
+// Permission handlers with cinematic reveal
+function acceptPermission(btn){
+    btn.parentElement.remove();
+    const specialMessage=`
+💌 I think it’s time I tell you something special ❤️<br>
+The person who created me smiles a little more whenever he thinks of you.<br>
+His name is Sunil.<br>
+He didn’t want to just say it — he wanted to create something unique for you, just like this moment. 💖
+    `;
+    addMessage(specialMessage,"bot");
+    chatEnded = true;
+
+    // Gradually increase music volume for cinematic effect
+    let vol = music.volume;
+    const fadeIn = setInterval(()=>{
+        if(vol<0.3){ // max cinematic volume
+            vol += 0.005; // increase slowly
+            music.volume = vol;
+        } else {
+            clearInterval(fadeIn);
+        }
+    },50);
+}
+
+function denyPermission(btn){
+    btn.parentElement.remove();
+    addMessage("That's okay 💌 We can chat another time.","bot");
+    chatEnded=true;
+}
+
+// Send message
+async function sendMessage(){
+    if(chatEnded) return;
+
+    const input = document.getElementById("message");
+    const userText = input.value;
+    if(!userText) return;
+
+    addMessage("<b>You:</b> "+userText,"user");
+    input.value="";
+    userCount++;
+
+    // Start music on first user interaction
+    if(!musicStarted){
+        music.play().catch(()=>{}); // safe play
+        musicStarted = true;
+    }
+
+    // CupidAI reply
+    addMessage("Typing...","typing");
+    const response = await fetch("/chat/",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({message:userText})
+    });
+    document.querySelector(".typing").remove();
+    const data = await response.json();
+    addMessage("<b>CupidAI:</b> "+data.reply,"bot");
+
+    // Gradual introduction after 6 user messages
+    if(userCount>=6 && introStep===0){
+        introStep=1;
+        gradualIntroduction();
+    }
+}
+
+
+// Gradual introduction (only 2 bot messages)
+function gradualIntroduction(){
+    const introMsgs=[
+        {text:"There’s something special I want to share… slowly, so you can feel it.", delay:7000},
+        {text:"The person who created me has been thinking about you with love ❤️", delay:0, buttons:true} // show buttons at last step
+    ];
+    let index=0;
+    function nextMsg(){
+        if(index>=introMsgs.length) return;
+        const msg=introMsgs[index];
+        addMessage(msg.text,"bot");
+        if(msg.buttons){showPermissionButtons();}
+        else{setTimeout(nextMsg,msg.delay);}
+        index++;
+        if(!msg.buttons) setTimeout(nextMsg,msg.delay);
+    }
+    nextMsg();
+}
+
+
+// Initial greeting
+window.onload=function(){
+    addMessage("<b>CupidAI:</b> Hi 👋 I’ve been waiting for you…","bot");
+}
+</script>
+</body>
+</html>
