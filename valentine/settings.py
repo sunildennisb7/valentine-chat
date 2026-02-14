@@ -38,7 +38,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['i-love-you.onrender.com', 'localhost', '127.0.0.1']
+# ALLOWED_HOSTS = ['i-love-you.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']  # for testing; later replace with your live domain
 
 
 # Application definition
@@ -90,6 +91,7 @@ WSGI_APPLICATION = 'valentine.wsgi.application'
 
 DATABASES = {
     'default': {
+        
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
@@ -131,9 +133,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 
-# Static files
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic will put files here
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
